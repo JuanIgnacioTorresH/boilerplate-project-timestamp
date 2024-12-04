@@ -20,8 +20,30 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/:date?", function (req, res) {
+  const { date } = req.params
+  console.log(date)
+  if (date == null){
+    const utcDate = new Date()
+    const unixDate = Date.now()
+    res.json({unix: Number(unixDate), utc: utcDate.toUTCString()})
+  } else if (date.includes('-') || date.includes('/') || date.includes(' ')){
+    const utcDate = new Date(date)
+    if (utcDate.toString() === 'Invalid Date'){
+      res.json({error: 'Invalid Date'})
+    } else {
+      const unixDate = Date.parse(date)
+      res.json({unix: Number(unixDate), utc: utcDate.toUTCString()});
+    }
+  } else {
+    const unixDate = Number(date)
+    const utcDate = new Date(unixDate)
+    if (utcDate.toString() === 'Invalid Date'){
+      res.json({error: 'Invalid Date'})
+    } else {
+      res.json({unix: unixDate, utc: utcDate.toUTCString()});
+    }
+  }
 });
 
 
